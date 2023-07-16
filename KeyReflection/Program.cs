@@ -14,6 +14,7 @@ namespace KeyReflection
             {
                 var input = Console.ReadLine();
                 WriteBiggestKeys(dictK, dictV, input);
+                Console.WriteLine();
             }
         }
 
@@ -33,13 +34,17 @@ namespace KeyReflection
 
         private static void WriteResult(SortedDictionary<int, List<string>> dictV)
         {
-            ICollection<int> values = dictV.Keys;
+            var values = dictV.Keys;
+            var valuesList = new List<int>();
+            foreach (var val in values)
+            {
+                valuesList.Add(val);
+            }
             var counter = 10;
 
-            Console.WriteLine();
-            foreach (var value in values)
-            {
-                foreach (var key in dictV[value])
+            for (int i = valuesList.Count - 1; i >= 0; i--)
+            { 
+                foreach (var key in dictV[valuesList[i]])
                 {
                     Console.Write(key + " ");
                     counter--;
