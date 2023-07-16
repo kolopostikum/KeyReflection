@@ -35,16 +35,18 @@ namespace KeyReflection
         private static void WriteResult(SortedDictionary<int, List<string>> dictV)
         {
             var values = dictV.Keys;
-            var valuesList = new List<int>();
+            var valuesArr = new int[values.Count];
+            var index = values.Count - 1;
             foreach (var val in values)
             {
-                valuesList.Add(val);
+                valuesArr[index] = val;
+                index--;
             }
             var counter = 10;
 
-            for (int i = valuesList.Count - 1; i >= 0; i--)
+            for (int i = 0; i < valuesArr.Length; i++)
             { 
-                foreach (var key in dictV[valuesList[i]])
+                foreach (var key in dictV[valuesArr[i]])
                 {
                     Console.Write(key + " ");
                     counter--;
