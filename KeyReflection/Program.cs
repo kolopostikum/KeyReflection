@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KeyReflection
 {
@@ -8,8 +9,8 @@ namespace KeyReflection
         static void Main(string[] args)
         {
             var N = int.Parse(Console.ReadLine());
-            var dictK = new Dictionary<string, int>();
-            var dictV = new SortedDictionary<int, List <string>>();
+            var dictK = new Dictionary<string, long>();
+            var dictV = new SortedDictionary<long, HashSet<string>>();
             for (int i = 0; i < N; i++)
             {
                 var input = Console.ReadLine();
@@ -18,35 +19,27 @@ namespace KeyReflection
             }
         }
 
-        private static void WriteBiggestKeys(Dictionary<string, int> dictK
-, SortedDictionary<int, List<string>> dictV, string input)
+        private static void WriteBiggestKeys(Dictionary<string, long> dictK
+, SortedDictionary<long, HashSet<string>> dictV, string input)
         {
-            Tuple<string, int> inpKartel = Tuple.Create(input.Split(' ')[0],
-                                               int.Parse(input.Split(' ')[1]));
+            var inpKartel = input.Split(' ');
+            var key = inpKartel[0];
+            var value = long.Parse(inpKartel[1]);
 
-            if (dictK.ContainsKey(inpKartel.Item1))
-                AddValueToDictsOld(dictK, dictV, inpKartel);
+            if (dictK.ContainsKey(key))
+                AddValueToDictsOld(dictK, dictV, key, value);
 
             else
-                AddValueToDictsNew(dictK, dictV, inpKartel);
+                AddValueToDictsNew(dictK, dictV, key, value);
             WriteResult(dictV);
         }
 
-        private static void WriteResult(SortedDictionary<int, List<string>> dictV)
+        private static void WriteResult(SortedDictionary<long, HashSet<string>> dictV)
         {
-            var values = dictV.Keys;
-            var valuesArr = new int[values.Count];
-            var index = values.Count - 1;
-            foreach (var val in values)
-            {
-                valuesArr[index] = val;
-                index--;
-            }
             var counter = 10;
-
-            for (int i = 0; i < valuesArr.Length; i++)
-            { 
-                foreach (var key in dictV[valuesArr[i]])
+            foreach (var value in dictV.Keys.Reverse())
+            {
+                foreach (var key in dictV[value])
                 {
                     Console.Write(key + " ");
                     counter--;
@@ -55,36 +48,33 @@ namespace KeyReflection
             }
         }
 
-        private static void AddValueToDictsNew(Dictionary<string, int> dictK
-            , SortedDictionary<int, List<string>> dictV, Tuple<string, int> inpKartel)
+        private static void AddValueToDictsNew(Dictionary<string, long> dictK
+            , SortedDictionary<long, HashSet<string>> dictV, string key, long value)
         {
-            dictK[inpKartel.Item1] = inpKartel.Item2;
-            var newVal = dictK[inpKartel.Item1];
-            AddToDictVal(newVal, inpKartel.Item1, dictV);
+            dictK[key] = value;
+            var newVal = dictK[key];
+            AddToDictVal(newVal, key, dictV);
         }
 
-        private static void AddValueToDictsOld(Dictionary<string, int> dictK
-            , SortedDictionary<int, List<string>> dictV, Tuple<string, int> inpKartel)
+        private static void AddValueToDictsOld(Dictionary<string, long> dictK
+            , SortedDictionary<long, HashSet<string>> dictV, string key, long value)
         {
-            var oldVal = dictK[inpKartel.Item1];
-            dictV[oldVal].Remove(inpKartel.Item1);
+            var oldVal = dictK[key];
+            dictV[oldVal].Remove(key);
 
-            if (dictV[oldVal].Count == 0)
-                dictV.Remove(oldVal);
+            dictK[key] += value;
 
-            dictK[inpKartel.Item1] += inpKartel.Item2;
+            var newVal = dictK[key];
 
-            var newVal = dictK[inpKartel.Item1];
-
-            AddToDictVal(newVal, inpKartel.Item1, dictV);
+            AddToDictVal(newVal, key, dictV);
         }
 
-        private static void AddToDictVal(int newVal, string key, SortedDictionary<int, List<string>> dictV)
+        private static void AddToDictVal(long newVal, string key, SortedDictionary<long, HashSet<string>> dictV)
         {
             if (dictV.ContainsKey(newVal))
                 dictV[newVal].Add(key);
             else
-                dictV[newVal] = new List<string> { key };
+                dictV[newVal] = new HashSet<string> { key };
         }
     }
 }
